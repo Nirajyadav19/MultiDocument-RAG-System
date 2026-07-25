@@ -1,0 +1,89 @@
+<svg viewBox="0 0 1200 700" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#555"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="700" fill="#ffffff"/>
+  <text x="600" y="35" text-anchor="middle" font-size="22" font-weight="700" fill="#1a1a1a">RAG API Architecture — SQL &amp; Machine Learning Knowledge Assistant</text>
+
+  <!-- Ingestion pipeline -->
+  <rect x="40" y="80" width="1120" height="150" rx="10" fill="#f5f7fb" stroke="#c9d3e3"/>
+  <text x="60" y="105" font-size="14" font-weight="700" fill="#3b5bdb">1. Offline Ingestion Pipeline (create_vector_db.py)</text>
+
+  <rect x="70" y="130" width="170" height="70" rx="8" fill="#dbe4ff" stroke="#3b5bdb"/>
+  <text x="155" y="158" text-anchor="middle" font-size="13" fill="#1a1a1a">PDF Files</text>
+  <text x="155" y="176" text-anchor="middle" font-size="11" fill="#444">SQL-Manual.pdf</text>
+  <text x="155" y="190" text-anchor="middle" font-size="11" fill="#444">ML-book.pdf</text>
+
+  <rect x="290" y="130" width="200" height="70" rx="8" fill="#dbe4ff" stroke="#3b5bdb"/>
+  <text x="390" y="158" text-anchor="middle" font-size="13" fill="#1a1a1a">pdf_loader.py</text>
+  <text x="390" y="176" text-anchor="middle" font-size="11" fill="#444">PyMuPDFLoader</text>
+  <text x="390" y="190" text-anchor="middle" font-size="11" fill="#444">OCR fallback (Tesseract)</text>
+
+  <rect x="540" y="130" width="200" height="70" rx="8" fill="#dbe4ff" stroke="#3b5bdb"/>
+  <text x="640" y="158" text-anchor="middle" font-size="13" fill="#1a1a1a">embedding.py</text>
+  <text x="640" y="176" text-anchor="middle" font-size="11" fill="#444">RecursiveCharacterTextSplitter</text>
+  <text x="640" y="190" text-anchor="middle" font-size="11" fill="#444">Qwen3-Embedding-0.6B</text>
+
+  <rect x="790" y="130" width="330" height="70" rx="8" fill="#d3f9d8" stroke="#2f9e44"/>
+  <text x="955" y="158" text-anchor="middle" font-size="13" fill="#1a1a1a">Chroma Vector DB</text>
+  <text x="955" y="176" text-anchor="middle" font-size="11" fill="#444">collection: "sql"</text>
+  <text x="955" y="190" text-anchor="middle" font-size="11" fill="#444">collection: "machine_learning"</text>
+
+  <line x1="240" y1="165" x2="290" y2="165" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="490" y1="165" x2="540" y2="165" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="740" y1="165" x2="790" y2="165" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Runtime query pipeline -->
+  <rect x="40" y="260" width="1120" height="400" rx="10" fill="#fff9f0" stroke="#f0c36d"/>
+  <text x="60" y="285" font-size="14" font-weight="700" fill="#e67700">2. Runtime Query Pipeline (main.py — FastAPI)</text>
+
+  <rect x="70" y="320" width="170" height="60" rx="8" fill="#ffe8cc" stroke="#e67700"/>
+  <text x="155" y="345" text-anchor="middle" font-size="13" fill="#1a1a1a">POST /query</text>
+  <text x="155" y="362" text-anchor="middle" font-size="11" fill="#444">bulk questions</text>
+
+  <rect x="290" y="320" width="210" height="60" rx="8" fill="#ffe8cc" stroke="#e67700"/>
+  <text x="395" y="345" text-anchor="middle" font-size="13" fill="#1a1a1a">Classification LLM call</text>
+  <text x="395" y="362" text-anchor="middle" font-size="11" fill="#444">gpt-4o-mini → sql / general</text>
+
+  <rect x="550" y="290" width="230" height="50" rx="8" fill="#d3f9d8" stroke="#2f9e44"/>
+  <text x="665" y="320" text-anchor="middle" font-size="12" fill="#1a1a1a">retriver1() → "sql" collection</text>
+
+  <rect x="550" y="360" width="230" height="50" rx="8" fill="#d3f9d8" stroke="#2f9e44"/>
+  <text x="665" y="390" text-anchor="middle" font-size="12" fill="#1a1a1a">retriver2() → "machine_learning"</text>
+
+  <rect x="830" y="325" width="290" height="60" rx="8" fill="#e5dbff" stroke="#7048e8"/>
+  <text x="975" y="350" text-anchor="middle" font-size="13" fill="#1a1a1a">CrossEncoder Reranker</text>
+  <text x="975" y="367" text-anchor="middle" font-size="11" fill="#444">BAAI/bge-reranker-large (top 3)</text>
+
+  <rect x="70" y="430" width="450" height="70" rx="8" fill="#ffe8cc" stroke="#e67700"/>
+  <text x="295" y="458" text-anchor="middle" font-size="13" fill="#1a1a1a">PromptTemplate (config/prompt.yaml)</text>
+  <text x="295" y="476" text-anchor="middle" font-size="11" fill="#444">injects retrieved context + question</text>
+
+  <rect x="560" y="430" width="250" height="70" rx="8" fill="#ffe8cc" stroke="#e67700"/>
+  <text x="685" y="458" text-anchor="middle" font-size="13" fill="#1a1a1a">ChatOpenAI</text>
+  <text x="685" y="476" text-anchor="middle" font-size="11" fill="#444">gpt-4o-mini generates answer</text>
+
+  <rect x="850" y="430" width="270" height="70" rx="8" fill="#d0ebff" stroke="#1971c2"/>
+  <text x="985" y="458" text-anchor="middle" font-size="13" fill="#1a1a1a">JSON Response</text>
+  <text x="985" y="476" text-anchor="middle" font-size="11" fill="#444">{ question, answer }</text>
+
+  <!-- flow arrows -->
+  <line x1="240" y1="350" x2="290" y2="350" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="500" y1="335" x2="550" y2="315" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="500" y1="365" x2="550" y2="385" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="780" y1="315" x2="830" y2="345" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="780" y1="385" x2="830" y2="360" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="975" y1="385" x2="500" y2="440" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="520" y1="463" x2="560" y2="463" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="810" y1="463" x2="850" y2="463" stroke="#555" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- connect vector db to retrievers -->
+  <line x1="955" y1="200" x2="955" y2="240" stroke="#2f9e44" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <line x1="955" y1="240" x2="665" y2="240" stroke="#2f9e44" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <line x1="665" y1="240" x2="665" y2="290" stroke="#2f9e44" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+
+  <text x="600" y="670" text-anchor="middle" font-size="11" fill="#888">Vector store reads (vector_store.py) shown as dashed green lines</text>
+</svg>
