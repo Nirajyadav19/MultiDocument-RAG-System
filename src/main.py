@@ -7,6 +7,7 @@ import time
 from dotenv import load_dotenv
 import os
 import yaml
+import asyncio
 
 load_dotenv()
 
@@ -14,6 +15,9 @@ api_key=os.getenv("OPENAI_API_KEY")
 
 class query_model(BaseModel):
     question: str
+
+class bulkquestion_model(BaseModel):
+    bulkrequest:list[query_model]
 
 app=FastAPI()
 
@@ -40,43 +44,63 @@ classification_template = PromptTemplate(
 )
 
 @app.post("/query")
-async def retrive_ans(query: query_model):
-    time1=time.time()
-    classification_prompt_text=classification_template.format(
-    question=query.question
-)
-    result =await llm.ainvoke(classification_prompt_text)
-    category = result.content.strip().lower()
-    print(category)
+async def retrieve_ans(query: bulkquestion_model):
 
-    retrievers = {
-    "sql": retriver1,
-    "general": retriver2,
-    }
+    async def process_question(item):
 
-    retriever = retrievers.get(category)
-    print(retriever)
-    if retriever is None:
-        return {
-            "error": f"Unknown category returned by classifier: {category}"
+        question = item.question
+
+        # 1. Classification
+        classification_prompt_text = classification_template.format(
+            question=question
+        )
+
+        result = await llm.ainvoke(
+            classification_prompt_text
+        )
+
+        category = result.content.strip().lower()
+
+        # 2. Select retriever
+        retrievers = {
+            "sql": retriver1,
+            "general": retriver2,
         }
 
-    context = retriever(query.question)
-    print(context)
-    """ if category == "sql":
-        context = retriver1(query.question)
-        print(context)
+        retriever = retrievers.get(category)
+
+        if retriever is None:
+            return {
+                "question": question,
+                "error": f"Unknown category: {category}"
+            }
+
+        # 3. Retrieve context
+        context = retriever(question)
+
+        # 4. Generate prompt
         formatted_prompt = prompt_template.format(
             context=context,
-            question=query.question
-        ) """
-    """ else:
-        context = retriver2(query.question)
-        print(context) """
-    formatted_prompt = prompt_template.format(
-        context=context,
-        question=query.question
-    )
-    response = await llm.ainvoke(formatted_prompt)
-    return response.content
+            question=question
+        )
+
+        # 5. Generate answer
+        response = await llm.ainvoke(
+            formatted_prompt
+        )
+
+        return {
+            "question": question,
+            "answer": response.content
+        }
     
+    results = await asyncio.gather(
+        *[
+            process_question(q)
+            for q in query.bulkrequest
+        ]
+    )
+
+    return {
+        "results": results
+    }

@@ -1,5 +1,6 @@
-from vector_store import vector_store1,vector_store2
+from src.vector_store import vector_store1,vector_store2
 from sentence_transformers import CrossEncoder
+import asyncio
 
 reranker = CrossEncoder(
     "BAAI/bge-reranker-large"
@@ -38,21 +39,21 @@ async def retriver1(query:str):
     ]
     return page_contents
 
-def retriver2(query:str):
+async def retriver2(query:str):
     
     retriver=vector_store2.as_retriever(
          search_type="similarity",
         search_kwargs={"k": 7}
     )
 
-    results= retriver.invoke(query)
+    results=await retriver.invoke(query)
 
     pairs = [
         [query, doc.page_content]
         for doc in results
     ]
 
-    scores =reranker.predict(pairs)
+    scores =await reranker.predict(pairs)
 
     ranked_docs = sorted(
         zip(results, scores),
@@ -70,5 +71,3 @@ def retriver2(query:str):
         for doc in final_docs
     ]
     return page_contents
-
-print(retriver2("what is sql"))
