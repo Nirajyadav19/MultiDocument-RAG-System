@@ -104,8 +104,8 @@ It's designed as a reference implementation for building **domain-routed RAG sys
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/<your-username>/<your-repo-name>.git
-cd <your-repo-name>
+git clone https://github.com/Nirajyadav19/MultiDocument-RAG-System.git
+cd <MultiDocument-RAG-System>
 
 # 2. Create and activate a virtual environment
 python -m venv venv
